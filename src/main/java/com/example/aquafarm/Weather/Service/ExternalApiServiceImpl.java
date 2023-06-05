@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -51,23 +52,15 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Override
     public String getSunriseTimeFromWeatherAPI(double latitude, double longitude) {
-        String apiUrl = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
+        String apiUrl = "https://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo";
         String serviceKey = "9tfrUPQ2c78KRdrN7%2F3cCiHrqC8Oe%2FoB3GhGUeiYM2FFoJDrV9%2FR3KG9rBVgPXEQAXdSuQPQgeRAhzjFbF0RRA%3D%3D";
-        String baseDate = "20230604";
-        String baseTime = "0600";
-        String nx = "55";
-        String ny = "127";
-        String numOfRows = "10";
-        String pageNo = "1";
+        String locDate = "20230605";
+        String location = "서울";
 
         String apiUrlWithParams = UriComponentsBuilder.fromHttpUrl(apiUrl)
-                .queryParam("serviceKey", serviceKey)
-                .queryParam("numOfRows", numOfRows)
-                .queryParam("pageNo", pageNo)
-                .queryParam("base_date", baseDate)
-                .queryParam("base_time", baseTime)
-                .queryParam("nx", nx)
-                .queryParam("ny", ny)
+                .queryParam("location", location)
+                .queryParam("locdate", locDate)
+                .queryParam("ServiceKey", serviceKey)
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
@@ -87,26 +80,19 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
     @Override
     public String getSunsetTimeFromWeatherAPI(double latitude, double longitude) {
-        String apiUrl = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
+        String apiUrl = "https://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo";
         String serviceKey = "9tfrUPQ2c78KRdrN7%2F3cCiHrqC8Oe%2FoB3GhGUeiYM2FFoJDrV9%2FR3KG9rBVgPXEQAXdSuQPQgeRAhzjFbF0RRA%3D%3D";
-        String baseDate = "20230604";
-        String baseTime = "0600";
-        String nx = "55";
-        String ny = "127";
-        String numOfRows = "10";
-        String pageNo = "1";
+        String locDate = "20230605";
+        String location = "서울";
 
         String apiUrlWithParams = UriComponentsBuilder.fromHttpUrl(apiUrl)
-                .queryParam("serviceKey", serviceKey)
-                .queryParam("numOfRows", numOfRows)
-                .queryParam("pageNo", pageNo)
-                .queryParam("base_date", baseDate)
-                .queryParam("base_time", baseTime)
-                .queryParam("nx", nx)
-                .queryParam("ny", ny)
+                .queryParam("location", location)
+                .queryParam("locdate", locDate)
+                .queryParam("ServiceKey", serviceKey)
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
+
         WeatherResponse weatherResponse = getWeatherData(apiUrlWithParams);
 
         if (weatherResponse != null && "success".equals(weatherResponse.getStatus())) {
