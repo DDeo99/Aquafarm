@@ -3,6 +3,12 @@ package com.example.aquafarm.Weather.Response;
 public class WeatherResponse {
     private Response response;
 
+    public WeatherResponse() {
+        this.response = new Response();
+        this.response.setBody(new Body());
+        this.response.getBody().setItem(new com.example.aquafarm.Weather.Response.Item());
+    }
+
     public Response getResponse() {
         return response;
     }
@@ -24,50 +30,18 @@ public class WeatherResponse {
     }
 
     public static class Body {
-        private Items items;
+        private com.example.aquafarm.Weather.Response.Item item;
 
-        public Items getItems() {
-            return items;
-        }
-
-        public void setItems(Items items) {
-            this.items = items;
-        }
-    }
-
-    public static class Items {
-        private Item item;
-
-        public Item getItem() {
+        public com.example.aquafarm.Weather.Response.Item getItem() {
             return item;
         }
 
-        public void setItem(Item item) {
+        public void setItem(com.example.aquafarm.Weather.Response.Item item) {
             this.item = item;
         }
     }
 
-    public static class Item {
-        private String sunrise;
-        private String sunset;
-
-        public String getSunrise() {
-            return sunrise;
-        }
-
-        public void setSunrise(String sunrise) {
-            this.sunrise = sunrise;
-        }
-
-        public String getSunset() {
-            return sunset;
-        }
-
-        public void setSunset(String sunset) {
-            this.sunset = sunset;
-        }
-    }
-
+    // 추가된 getStatus() 메서드
     public String getStatus() {
         return response.getBody().getItem().getStatus();
     }

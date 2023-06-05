@@ -3,85 +3,147 @@ package com.example.aquafarm.Weather.Service;
 import com.example.aquafarm.Weather.DTO.WeatherDTO;
 import com.example.aquafarm.Weather.Response.ExternalApiException;
 import com.example.aquafarm.Weather.Response.WeatherResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Service
 public class ExternalApiServiceImpl implements ExternalApiService {
+    private final RestTemplate restTemplate;
+
     @Value("${weather.api.url}")
     private String weatherApiUrl;
 
+    @Value("${weather.api.key}")
+    private String weatherApiKey;
+
+    @Value("${google.api.key}")
+    private String googleApiKey;
+
+    @Autowired
+    public ExternalApiServiceImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    @Override
+    public <T> ResponseEntity<T> getApiResponse(String apiUrl, Class<T> responseType) {
+        return restTemplate.getForEntity(apiUrl, responseType);
+    }
+
     @Override
     public WeatherResponse getWeatherData(String apiUrl) {
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<WeatherResponse> response = restTemplate.getForEntity(apiUrl, WeatherResponse.class);
+        restTemplate.getMessageConverters().add(new MappingJackson2XmlHttpMessageConverter());
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
+        ResponseEntity<WeatherResponse> responseEntity = restTemplate.getForEntity(apiUrl, WeatherResponse.class);
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            return responseEntity.getBody();
         } else {
             throw new ExternalApiException("Failed to retrieve weather data from API");
         }
     }
 
     @Override
-    public LocalDateTime getSunriseTimeFromWeatherAPI ( double latitude, double longitude){
-        String apiUrl = weatherApiUrl + "/sunrise?lat=" + latitude + "&lon=" + longitude;
+    public String getSunriseTimeFromWeatherAPI(double latitude, double longitude) {
+        String apiUrl = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
+        String serviceKey = "9tfrUPQ2c78KRdrN7%2F3cCiHrqC8Oe%2FoB3GhGUeiYM2FFoJDrV9%2FR3KG9rBVgPXEQAXdSuQPQgeRAhzjFbF0RRA%3D%3D";
+        String baseDate = "20230604";
+        String baseTime = "0600";
+        String nx = "55";
+        String ny = "127";
+        String numOfRows = "10";
+        String pageNo = "1";
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<WeatherResponse> response = restTemplate.getForEntity(apiUrl, WeatherResponse.class);
-        WeatherResponse weatherResponse = response.getBody();
+        String apiUrlWithParams = UriComponentsBuilder.fromHttpUrl(apiUrl)
+                .queryParam("serviceKey", serviceKey)
+                .queryParam("base_date", baseDate)
+                .queryParam("base_time", baseTime)
+                .queryParam("nx", nx)
+                .queryParam("ny", ny)
+                .queryParam("numOfRows", numOfRows)
+                .queryParam("pageNo", pageNo)
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUriString();
 
-        if (weatherResponse != null && weatherResponse.getStatus().equals("success")) {
-            // 일출 시간을 LocalDateTime으로 변환하여 반환
-            String sunriseTimeStr = weatherResponse.getSunrise();
-            LocalDateTime sunriseTime = LocalDateTime.parse(sunriseTimeStr);
-            return LocalDateTime.of(LocalDate.now(), sunriseTime);
+        WeatherResponse weatherResponse = getWeatherData(apiUrlWithParams);
+
+        if (weatherResponse != null && "success".equals(weatherResponse.getStatus())) {
+            com.example.aquafarm.Weather.Response.Item item = weatherResponse.getResponse().getBody().getItem();
+            if (item != null) {
+                String sunriseTime = item.getSunrise();
+                return sunriseTime;
+            }
         }
 
-        // 기상청 API 호출에 실패하거나 데이터가 없는 경우
         throw new ExternalApiException("Failed to retrieve sunrise time from Weather API");
     }
 
     @Override
-    public LocalTime getSunsetTimeFromWeatherAPI ( double latitude, double longitude){
-        String apiUrl = weatherApiUrl + "/sunset?lat=" + latitude + "&lon=" + longitude;
+    public String getSunsetTimeFromWeatherAPI(double latitude, double longitude) {
+        String apiUrl = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
+        String serviceKey = "9tfrUPQ2c78KRdrN7%2F3cCiHrqC8Oe%2FoB3GhGUeiYM2FFoJDrV9%2FR3KG9rBVgPXEQAXdSuQPQgeRAhzjFbF0RRA%3D%3D";
+        String baseDate = "20230604";
+        String baseTime = "0600";
+        String nx = "55";
+        String ny = "127";
+        String numOfRows = "10";
+        String pageNo = "1";
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<WeatherResponse> response = restTemplate.getForEntity(apiUrl, WeatherResponse.class);
-        WeatherResponse weatherResponse = response.getBody();
+        String apiUrlWithParams = UriComponentsBuilder.fromHttpUrl(apiUrl)
+                .queryParam("serviceKey", serviceKey)
+                .queryParam("base_date", baseDate)
+                .queryParam("base_time", baseTime)
+                .queryParam("nx", nx)
+                .queryParam("ny", ny)
+                .queryParam("numOfRows", numOfRows)
+                .queryParam("pageNo", pageNo)
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUriString();
 
-        if (weatherResponse != null && weatherResponse.getStatus().equals("success")) {
-            // 일몰 시간을 LocalTime으로 변환하여 반환
-            String sunsetTimeStr = weatherResponse.getSunset();
-            LocalTime sunsetTime = LocalTime.parse(sunsetTimeStr);
-            return sunsetTime;
+        WeatherResponse weatherResponse = getWeatherData(apiUrl);
+
+        if (weatherResponse != null && "success".equals(weatherResponse.getStatus())) {
+            com.example.aquafarm.Weather.Response.Item item = weatherResponse.getResponse().getBody().getItem();
+            if (item != null) {
+                String sunsetTime = item.getSunset();
+                return sunsetTime;
+            }
         }
 
-        // 기상청 API 호출에 실패하거나 데이터가 없는 경우
         throw new ExternalApiException("Failed to retrieve sunset time from Weather API");
-
     }
 
     @Override
-    public WeatherDTO getWeatherDTO (String location){
-        // 기상청 API를 사용하여 날씨 데이터를 가져오는 로직 작성
-        // ...
+    public WeatherDTO getWeatherDTO(String location) {
+        String apiUrl = UriComponentsBuilder.fromHttpUrl(weatherApiUrl)
+                .path("/weather")
+                .queryParam("location", location)
+                .queryParam("key", weatherApiKey)
+                .build()
+                .encode(StandardCharsets.UTF_8)
+                .toUriString();
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<WeatherResponse> response = restTemplate.getForEntity(weatherApiUrl, WeatherApiResponse.class);
+        WeatherResponse weatherResponse = getWeatherData(apiUrl);
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            WeatherResponse apiResponse = response.getBody();
-            // API 응답 데이터를 매핑하여 WeatherDTO 객체 생성
-            WeatherDTO weatherDTO = new WeatherDTO();
-            // ...
-            return weatherDTO;
+        if (Objects.requireNonNull(weatherResponse).getStatus().equals("success")) {
+            double latitude = weatherResponse.getResponse().getBody().getItem().getLatitude();
+            double longitude = weatherResponse.getResponse().getBody().getItem().getLongitude();
+
+            String sunriseTime = getSunriseTimeFromWeatherAPI(latitude, longitude);
+            String sunsetTime = getSunsetTimeFromWeatherAPI(latitude, longitude);
+
+            return WeatherDTO.builder()
+                    .sunrise(sunriseTime)
+                    .sunset(sunsetTime)
+                    .build();
         } else {
             throw new ExternalApiException("Failed to retrieve weather data from API");
         }

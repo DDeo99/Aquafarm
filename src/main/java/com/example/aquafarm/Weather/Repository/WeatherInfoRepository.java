@@ -16,4 +16,6 @@ public interface WeatherInfoRepository extends JpaRepository<WeatherInfo, Intege
     List<WeatherInfo> findByTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
 
     Optional<WeatherInfo> findFirstByOrderByTimeDesc();
+    Optional<WeatherInfo> findByAquafarmId(int aquafarmId);
+
 }

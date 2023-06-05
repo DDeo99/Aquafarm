@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 @Table(name = "waterinfo")
 public class WaterInfo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "water_ID")
     private int waterId;
 

@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,8 +16,9 @@ import java.time.LocalDateTime;
 @Table(name = "Weather_info")
 public class WeatherInfo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "weather_ID")
-    private int weatherId;
+    private long weatherId;
 
     @Column(name = "locationX")
     private double locationX;
@@ -24,11 +26,11 @@ public class WeatherInfo {
     @Column(name = "locationY")
     private double locationY;
 
-    private Timestamp time;
+    private LocalDate time;
 
-    private LocalDateTime sunrise;
+    private String  sunrise;
 
-    private LocalDateTime sunset;
+    private String  sunset;
 
     @Column(name = "updated_at")
     private Timestamp updatedAt;

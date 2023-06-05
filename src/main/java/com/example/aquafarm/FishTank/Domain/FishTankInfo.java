@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 @Table(name = "fish_tank_info")
 public class FishTankInfo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "fish_tank_ID")
     private int fishTankId;
 
