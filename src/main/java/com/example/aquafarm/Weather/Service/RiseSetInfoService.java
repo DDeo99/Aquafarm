@@ -13,6 +13,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class RiseSetInfoService {
@@ -23,10 +25,17 @@ public class RiseSetInfoService {
         this.weatherInfoRepository = weatherInfoRepository;
         this.geocodingService = geocodingService;
     }
-    public RiseSetInfoDTO getRiseSetInfo(String locdate, int weatherId) throws IOException {
+    public RiseSetInfoDTO getRiseSetInfo(int weatherId) throws IOException {
 
         WeatherInfo weatherInfo = weatherInfoRepository.findById(weatherId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid weather ID"));
+
+        // 오늘 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        // 날짜를 원하는 포맷으로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String locdate = currentDate.format(formatter);
 
         // 주소를 위도와 경도로 변환
         GeolocationDTO location = geocodingService.getGeolocationFromAddress(weatherInfo.getAddress());
