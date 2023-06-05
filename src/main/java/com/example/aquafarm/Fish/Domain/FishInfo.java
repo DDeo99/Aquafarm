@@ -22,20 +22,20 @@ public class FishInfo {
     private int fishId;
 
     private String species;
-
+    @Column(nullable = true)
     private byte[] photo;
-
+    @Column(nullable = true)
     private double size;
-
+    @Column(nullable = true)
     private double growth;
 
-    @Column(name = "food_record")
+    @Column(name = "food_record",nullable = true)
     private LocalDateTime foodRecord;
 
-    @Column(name = "stocking_date")
+    @Column(name = "stocking_date",nullable = true)
     private int stockingDate;
 
-    @Column(name = "feeding_amount")
+    @Column(name = "feeding_amount",nullable = true)
     private double feedingAmount;
 
     @Column(name = "updated_at")

@@ -139,9 +139,11 @@ import java.util.function.Function;
     }
 
     @Override
-    public Optional<WeatherInfo> findById(Integer integer) {
-        return Optional.empty();
+    public Optional<WeatherInfo> findById(Integer weatherId) {
+        WeatherInfo weatherInfo = entityManager.find(WeatherInfo.class, weatherId);
+        return Optional.ofNullable(weatherInfo);
     }
+
 
     @Override
     public boolean existsById(Integer integer) {
