@@ -89,6 +89,25 @@ public class RiseSetInfoService {
         }
     }
 
+    public void updateWeatherInfo(WeatherInfo weatherInfo, RiseSetInfoDTO riseSetInfoDTO) {
+        // longitudeNum과 latitudeNum을 가져옴
+        String longitudeNum = riseSetInfoDTO.getLongitudeNum();
+        String latitudeNum = riseSetInfoDTO.getLatitudeNum();
+
+        // sunrise과 sunset을 가져옴
+        String sunrise = riseSetInfoDTO.getSunrise();
+        String sunset = riseSetInfoDTO.getSunset();
+
+        // 가져온 값들을 WeatherInfo 객체에 설정
+        weatherInfo.setLocationX(longitudeNum);
+        weatherInfo.setLocationY(latitudeNum);
+        weatherInfo.setSunrise(sunrise);
+        weatherInfo.setSunset(sunset);
+
+        // WeatherInfo 저장
+        weatherInfoRepository.save(weatherInfo);
+    }
+
     private RiseSetInfoDTO parseResponse(String response) {
         RiseSetInfoDTO riseSetInfoDTO = new RiseSetInfoDTO();
 
