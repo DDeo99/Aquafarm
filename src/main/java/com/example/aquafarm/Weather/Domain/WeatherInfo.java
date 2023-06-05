@@ -18,7 +18,7 @@ public class WeatherInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "weather_ID")
-    private long weatherId;
+    private int weatherId;
 
     @Column(name = "locationX")
     private double locationX;
@@ -26,7 +26,7 @@ public class WeatherInfo {
     @Column(name = "locationY")
     private double locationY;
 
-    private LocalDate time;
+    private LocalDateTime time;
 
     private String  sunrise;
 
