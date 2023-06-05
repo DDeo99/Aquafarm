@@ -1,49 +1,79 @@
 package com.example.aquafarm.Weather.Controller;
+import com.example.aquafarm.Aquafarm.Domain.AquafarmInfo;
+import com.example.aquafarm.Aquafarm.Repository.AquafarmInfoRepository;
+import com.example.aquafarm.Weather.Domain.WeatherInfo;
+import com.example.aquafarm.Weather.Repository.WeatherInfoRepository;
 import com.example.aquafarm.Weather.Response.WeatherResponse;
+import com.example.aquafarm.Weather.Service.ExternalApiService;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.LatLng;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+
+
 @Controller
 public class WeatherController {
 
-        // application.properties 파일에서 API 키 값을 가져옴
-        @Value("${api.key}")
-        private String apiKey;
+    @Autowired
+    private WeatherInfoRepository weatherInfoRepository;
 
-        @GetMapping("/weather")
-        public String getWeatherInfo(Model model) {
-        // API 요청 URL 구성
-        String apiUrl = "http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo";
-        String locDate = "20230603"; // 조회할 날짜
-            // Weather_info 테이블에서 locationX와 locationY 조회 (예시로 1번 데이터로 가정)
-            double locationX = 1.23; // 예시 값, 실제로는 데이터베이스에서 조회해야 합니다.
-            double locationY = 4.56; // 예시 값, 실제로는 데이터베이스에서 조회해야 합니다.
+    @Autowired
+    private AquafarmInfoRepository aquafarmInfoRepository;
 
-            String location = locationX + "," + locationY; // 조회할 지역 (위도, 경도 형식)
+    @Autowired
+    private ExternalApiService externalApiService;
 
-            String requestUrl = apiUrl + "?serviceKey=" + apiKey + "&locdate=" + locDate + "&location=" + location;
+    @GetMapping("/weather")
+    public String getWeatherInfo(Model model) {
+        // aquafarm_info 테이블의 첫 번째 데이터를 가져옴
+        Optional<AquafarmInfo> aquafarmInfoOptional = aquafarmInfoRepository.findFirstByOrderByAquafarmId();
+        AquafarmInfo aquafarmInfo = aquafarmInfoOptional.orElse(null);
 
-        // API 호출
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<WeatherResponse> response = restTemplate.getForEntity(requestUrl, WeatherResponse.class);
-        WeatherResponse weatherResponse = response.getBody();
+        // 주소를 위도와 경도로 변환하여 가져옴
+        String address = aquafarmInfo.getAddress();
 
-        if (weatherResponse != null && weatherResponse.getResponse() != null
-                && weatherResponse.getResponse().getBody() != null) {
-            // 응답 데이터에서 일출시간과 일몰시간 추출
-            WeatherResponse.Body body = weatherResponse.getResponse().getBody();
-            String sunriseTime = body.getItems().getItem().getSunrise();
-            String sunsetTime = body.getItems().getItem().getSunset();
+        GeoApiContext context = new GeoApiContext.Builder()
+                .apiKey("AIzaSyAOEG0LCEJDSEXeLVIC50242dBcu6fQOF0")  // Geocoding API 키 입력
+                .build();
+
+        GeocodingResult[] results;
+        try {
+            results = GeocodingApi.geocode(context, address).await();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+
+        if (results.length > 0) {
+            LatLng location = results[0].geometry.location;
+            double latitude = location.lat;
+            double longitude = location.lng;
+
+            // 일출 시간과 일몰 시간을 가져옴
+            String sunriseTime = externalApiService.getSunriseTimeFromWeatherAPI(latitude, longitude);
+            String sunsetTime = externalApiService.getSunsetTimeFromWeatherAPI(latitude, longitude);
 
             // 모델에 데이터 전달
             model.addAttribute("sunriseTime", sunriseTime);
             model.addAttribute("sunsetTime", sunsetTime);
-        }
 
-        // weather.html 파일을 렌더링하여 응답 반환
-        return "weather";
+            return "weather";
+        } else {
+            // 주소를 변환할 수 없는 경우 처리
+            System.out.println("Failed to convert address to latitude and longitude.");
+            return "error";
+        }
     }
 }

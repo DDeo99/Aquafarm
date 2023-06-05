@@ -19,8 +19,11 @@ public interface AquafarmInfoRepository extends JpaRepository<AquafarmInfo, Inte
 
     List<AquafarmInfo> findByCustomCriteria(String criteria);
 
-    AquafarmInfo findById(int aquafarmId);
+    Optional<AquafarmInfo> findById(int aquafarmId);
+
+    //AquafarmInfo findById(int aquafarmId);
     // 특정 키워드를 포함하는 address를 가진 AquafarmInfo를 조회하는 메소드
 
     Optional<AquafarmInfo> findFirstByOrderByAquafarmId();
+
 }

@@ -25,7 +25,9 @@ public class AquafarmInfoRepositoryImpl implements AquafarmInfoRepository {
     private EntityManager entityManager;
 
     @Autowired
-    private AquafarmInfoRepository aquafarmInfoRepository;
+    public AquafarmInfoRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Optional<AquafarmInfo> findFirstByOrderByAquafarmId() {
@@ -38,17 +40,17 @@ public class AquafarmInfoRepositoryImpl implements AquafarmInfoRepository {
 
     @Override
     public List<AquafarmInfo> findByAddress(String address) {
-        return aquafarmInfoRepository.findByAddress(address);
+        return this.findByAddress(address);
     }
 
     @Override
     public List<AquafarmInfo> findByUserId(int userId) {
-        return aquafarmInfoRepository.findByUserId(userId);
+        return this.findByUserId(userId);
     }
 
     @Override
     public List<AquafarmInfo> findByAddressContaining(String keyword) {
-        return aquafarmInfoRepository.findByAddressContaining(keyword);
+        return this.findByAddressContaining(keyword);
     }
 
     @Override
@@ -185,18 +187,22 @@ public class AquafarmInfoRepositoryImpl implements AquafarmInfoRepository {
     }
 
     @Override
-    public AquafarmInfo findById(int aquafarmId) {
-        return entityManager.find(AquafarmInfo.class, aquafarmId);
+    public Optional<AquafarmInfo> findById(int aquafarmId){
+        return Optional.ofNullable(entityManager.find(AquafarmInfo.class, aquafarmId));
     }
+    //@Override
+    //public AquafarmInfo findById(int aquafarmId) {
+    //    return entityManager.find(AquafarmInfo.class, aquafarmId);
+    //}
 
     @Override
     public AquafarmInfo save(AquafarmInfo aquafarmInfo) {
-        return aquafarmInfoRepository.save(aquafarmInfo);
+        return this.save(aquafarmInfo);
     }
 
     @Override
     public void delete(AquafarmInfo aquafarmInfo) {
-        aquafarmInfoRepository.delete(aquafarmInfo);
+        this.delete(aquafarmInfo);
     }
 
     @Override

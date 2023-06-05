@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -64,6 +65,15 @@ import java.util.function.Function;
                 .stream()
                 .findFirst();
     }
+
+    @Override
+    public Optional<WeatherInfo> findByAquafarmId(int aquafarmId) {
+        String jpql = "SELECT w FROM WeatherInfo w WHERE w.aquafarm.aquafarmId = :aquafarmId";
+        TypedQuery<WeatherInfo> query = entityManager.createQuery(jpql, WeatherInfo.class);
+        query.setParameter("aquafarmId", aquafarmId);
+        return query.getResultList().stream().findFirst();
+    }
+
 
     @Override
     public List<WeatherInfo> findAll() {
