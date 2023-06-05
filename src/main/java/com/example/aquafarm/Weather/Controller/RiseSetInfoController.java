@@ -2,6 +2,8 @@ package com.example.aquafarm.Weather.Controller;
 
 
 import com.example.aquafarm.Weather.DTO.RiseSetInfoDTO;
+import com.example.aquafarm.Weather.Domain.WeatherInfo;
+import com.example.aquafarm.Weather.Repository.WeatherInfoRepository;
 import com.example.aquafarm.Weather.Service.RiseSetInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,12 @@ import java.io.IOException;
 @RestController
 public class RiseSetInfoController {
     private final RiseSetInfoService riseSetInfoService;
+    private final WeatherInfoRepository weatherInfoRepository;
 
     @Autowired
-    public RiseSetInfoController(RiseSetInfoService riseSetInfoService) {
+    public RiseSetInfoController(RiseSetInfoService riseSetInfoService,WeatherInfoRepository weatherInfoRepository) {
         this.riseSetInfoService = riseSetInfoService;
+        this.weatherInfoRepository = weatherInfoRepository;
     }
 
     @GetMapping("/rise-set-info")
@@ -26,7 +30,15 @@ public class RiseSetInfoController {
             @RequestParam("address") String address
     ) {
         try {
+            WeatherInfo weatherInfo = weatherInfoRepository.findByAddress(address);
             RiseSetInfoDTO response = riseSetInfoService.getRiseSetInfo(address);
+
+            // 필요한 정보 업데이트
+            riseSetInfoService.updateWeatherInfo(weatherInfo, response);
+
+            // 업데이트된 WeatherInfo 저장
+            weatherInfoRepository.save(weatherInfo);
+
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
