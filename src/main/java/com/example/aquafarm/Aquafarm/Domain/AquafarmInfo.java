@@ -1,5 +1,8 @@
 package com.example.aquafarm.Aquafarm.Domain;
 
+import com.example.aquafarm.FishTank.Domain.FishTankInfo;
+import com.example.aquafarm.User.Domain.UserInfo;
+import com.example.aquafarm.Weather.Domain.WeatherInfo;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,6 +22,8 @@ public class AquafarmInfo {
 
     private String address;
 
-    @Column(name = "user_ID")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_ID")
+    private UserInfo userInfo;
+
 }

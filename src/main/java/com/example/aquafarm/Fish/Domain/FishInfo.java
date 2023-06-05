@@ -1,8 +1,10 @@
 package com.example.aquafarm.Fish.Domain;
 
+import com.example.aquafarm.FishTank.Domain.FishTankInfo;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -36,5 +38,11 @@ public class FishInfo {
     @Column(name = "feeding_amount")
     private double feedingAmount;
 
-    private Timestamp date;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

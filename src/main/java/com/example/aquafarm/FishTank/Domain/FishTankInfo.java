@@ -1,5 +1,9 @@
 package com.example.aquafarm.FishTank.Domain;
 
+import com.example.aquafarm.Aquafarm.Domain.AquafarmInfo;
+import com.example.aquafarm.Fish.Domain.FishInfo;
+import com.example.aquafarm.Water.Domain.WaterInfo;
+import com.example.aquafarm.Weather.Domain.WeatherInfo;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,17 +22,21 @@ public class FishTankInfo {
     @Column(name = "fish_tank_ID")
     private int fishTankId;
 
-    @Column(name = "aquafarm_ID")
-    private int aquafarmId;
+    @ManyToOne
+    @JoinColumn(name = "aquafarm_ID")
+    private AquafarmInfo aquafarmInfo;
 
-    @Column(name = "water_ID")
-    private int waterId;
+    @OneToOne
+    @JoinColumn(name = "water_ID")
+    private WaterInfo waterInfo;
 
-    @Column(name = "fish_ID")
-    private int fishId;
+    @ManyToOne
+    @JoinColumn(name = "fish_ID")
+    private FishInfo fishInfo;
 
-    @Column(name = "weather_ID")
-    private int weatherId;
+    @ManyToOne
+    @JoinColumn(name = "weather_ID")
+    private WeatherInfo weatherInfo;
 
     @Column(name = "tank_number")
     private int tankNumber;
