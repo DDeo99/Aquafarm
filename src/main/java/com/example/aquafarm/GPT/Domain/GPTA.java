@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "GPT_Q")
+@Table(name = "GPT_A")
 public class GPTA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
