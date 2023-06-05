@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,6 +32,17 @@ import java.util.function.Function;
         this.entityManager = entityManager;
     }
 
+
+    @Override
+    public WeatherInfo findByAddress(String address) {
+        TypedQuery<WeatherInfo> query = entityManager.createQuery("SELECT w FROM WeatherInfo w WHERE w.address = :address", WeatherInfo.class);
+        query.setParameter("address", address);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
     @Override
     public List<WeatherInfo> findByLocationXAndLocationY(Double locationX, Double locationY) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();

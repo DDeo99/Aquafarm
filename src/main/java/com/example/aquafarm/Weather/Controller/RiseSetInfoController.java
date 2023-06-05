@@ -23,10 +23,10 @@ public class RiseSetInfoController {
 
     @GetMapping("/rise-set-info")
     public ResponseEntity<RiseSetInfoDTO> getRiseSetInfo(
-            @RequestParam("weatherId") int weatherId
+            @RequestParam("address") String address
     ) {
         try {
-            RiseSetInfoDTO response = riseSetInfoService.getRiseSetInfo(weatherId);
+            RiseSetInfoDTO response = riseSetInfoService.getRiseSetInfo(address);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

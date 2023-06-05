@@ -25,10 +25,12 @@ public class RiseSetInfoService {
         this.weatherInfoRepository = weatherInfoRepository;
         this.geocodingService = geocodingService;
     }
-    public RiseSetInfoDTO getRiseSetInfo(int weatherId) throws IOException {
+    public RiseSetInfoDTO getRiseSetInfo(String address) throws IOException {
 
-        WeatherInfo weatherInfo = weatherInfoRepository.findById(weatherId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid weather ID"));
+        WeatherInfo weatherInfo = weatherInfoRepository.findByAddress(address);
+        if (weatherInfo == null) {
+            throw new IllegalArgumentException("Invalid Address");
+        }
 
         // 오늘 날짜를 가져옴
         LocalDate currentDate = LocalDate.now();

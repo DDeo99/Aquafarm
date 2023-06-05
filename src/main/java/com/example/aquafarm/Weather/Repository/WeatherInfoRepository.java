@@ -17,5 +17,5 @@ public interface WeatherInfoRepository extends JpaRepository<WeatherInfo, Intege
 
     Optional<WeatherInfo> findFirstByOrderByTimeDesc();
     Optional<WeatherInfo> findByAquafarmId(int aquafarmId);
-
+    WeatherInfo findByAddress(String address);
 }
