@@ -62,12 +62,12 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
         String apiUrlWithParams = UriComponentsBuilder.fromHttpUrl(apiUrl)
                 .queryParam("serviceKey", serviceKey)
+                .queryParam("numOfRows", numOfRows)
+                .queryParam("pageNo", pageNo)
                 .queryParam("base_date", baseDate)
                 .queryParam("base_time", baseTime)
                 .queryParam("nx", nx)
                 .queryParam("ny", ny)
-                .queryParam("numOfRows", numOfRows)
-                .queryParam("pageNo", pageNo)
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
@@ -98,17 +98,16 @@ public class ExternalApiServiceImpl implements ExternalApiService {
 
         String apiUrlWithParams = UriComponentsBuilder.fromHttpUrl(apiUrl)
                 .queryParam("serviceKey", serviceKey)
+                .queryParam("numOfRows", numOfRows)
+                .queryParam("pageNo", pageNo)
                 .queryParam("base_date", baseDate)
                 .queryParam("base_time", baseTime)
                 .queryParam("nx", nx)
                 .queryParam("ny", ny)
-                .queryParam("numOfRows", numOfRows)
-                .queryParam("pageNo", pageNo)
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
-
-        WeatherResponse weatherResponse = getWeatherData(apiUrl);
+        WeatherResponse weatherResponse = getWeatherData(apiUrlWithParams);
 
         if (weatherResponse != null && "success".equals(weatherResponse.getStatus())) {
             com.example.aquafarm.Weather.Response.Item item = weatherResponse.getResponse().getBody().getItem();
