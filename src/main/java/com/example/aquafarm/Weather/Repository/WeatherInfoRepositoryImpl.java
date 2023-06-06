@@ -16,6 +16,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.security.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -43,6 +44,16 @@ import java.util.function.Function;
             return null;
         }
     }
+
+    @Override
+    public WeatherInfo findByAddressAndTime(String address, LocalDate time) {
+        String query = "SELECT w FROM WeatherInfo w WHERE w.address = :address AND w.time = :time";
+        return entityManager.createQuery(query, WeatherInfo.class)
+                .setParameter("address", address)
+                .setParameter("time", time)
+                .getSingleResult();
+    }
+
     @Override
     public List<WeatherInfo> findByLocationXAndLocationY(Double locationX, Double locationY) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();

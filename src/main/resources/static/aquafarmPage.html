@@ -2,30 +2,104 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Kibana Dashboard with Additional Data</title>
+    <title>넙치의 자동 급이 및 성장률 피드백 시스템</title>
     <style>
+        body {
+        padding: 0 250px; /* 양옆 여백 설정 */
+        }
         .container {
             display: flex;
         }
         .kibana {
             flex: 1;
+            padding: 20px;
+            border: 1px solid black;
         }
         .additional-data {
             flex: 1;
             padding: 20px;
+            border: 1px solid black;
+        }
+         .sunset {
+        display: flex;
+        }
+
+        .sunrise-info,
+        .sunset-info {
+          float: center;
+          padding: 10px;
+        }
+
+        .sunrise-info img,
+        .sunset-info img {
+           max-width: 400px;
+           max-height: 400px;
+        }
+        .sunrise-img,
+        .sunset-img {
+            width: 500px;
+            height: 500px;
+            margin-right: 30px;
+            margin-left: 30px;
         }
     </style>
+    <script>
+        // JavaScript를 사용하여 서버로부터 받아온 일출 및 일몰 시간을 HTML에 출력
+        function displaySunriseSunset(sunrise, sunset) {
+            const sunriseTime = sunrise.split(" ");
+            const sunsetTime = sunset.split(" ");
+
+            const sunriseElement = document.getElementById("sunrise-time");
+            const sunsetElement = document.getElementById("sunset-time");
+            const sunriseImgElement = document.getElementById("sunrise-img");
+            const sunsetImgElement = document.getElementById("sunset-img");
+
+            sunriseElement.innerText = sunriseTime[1];
+            sunsetElement.innerText = sunsetTime[1];
+            sunriseImgElement.src = "sunrise.jpg";
+            sunsetImgElement.src = "sunset.jpg";
+        }
+
+        // 서버로부터 일출 및 일몰 시간을 가져오는 함수
+        async function getSunriseSunset() {
+            try {
+                const response = await fetch(`/rise-set-info?address=weatherInfoAddress`);
+                const data = await response.json();
+
+                const sunrise = data.sunrise;
+                const sunset = data.sunset;
+
+                displaySunriseSunset(sunrise, sunset);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // 페이지 로드 시 일출 및 일몰 시간 가져오기
+        window.addEventListener("DOMContentLoaded", getSunriseSunset);
+    </script>
 </head>
 <body>
-<h1>Kibana Dashboard with Additional Data</h1>
+<h1>넙치의 자동 급이 및 성장률 피드백 시스템</h1>
 <div class="container">
     <div class="kibana">
+        <h2>수질 데이터 모니터링</h2>
         <iframe src="http://localhost:5601/app/dashboards#/view/d5acbe30-0440-11ee-b295-c966d495b73d?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))" width="100%" height="600px"></iframe>
     </div>
     <div class="additional-data">
         <h2>오늘의 일출/일몰 시간</h2>
-        <!-- 여기에 오늘의 일출/일몰 시간을 표시하는 데이터를 추가하세요 -->
+        <div class="sunset">
+            <div class="sunrise-info">
+                <p><h3>일출시간: <span id="sunrise-time"></span></h3></p>
+                <img class="sunrise-img" id="sunrise-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStH91I42CONez5U28Bpt5AoJIJU0nI0cnWuSMt5pc44A&s" alt="일출 사진">
+            </div>
+            <div class="sunset-info">
+                <p><h3>일몰시간: <span id="sunset-time"></span></h3></p>
+                <img class="sunset-img" id="sunset-img" src="data:image/jpeg;base64,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" alt="일몰 사진">
+            </div>
+        </div>
     </div>
 </div>
 </body>
 </html>
+
