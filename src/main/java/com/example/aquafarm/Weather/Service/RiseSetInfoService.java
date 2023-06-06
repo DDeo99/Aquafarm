@@ -27,13 +27,17 @@ public class RiseSetInfoService {
     }
     public RiseSetInfoDTO getRiseSetInfo(String address) throws IOException {
 
-        WeatherInfo weatherInfo = weatherInfoRepository.findByAddress(address);
+
+        // 오늘 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        WeatherInfo weatherInfo = weatherInfoRepository.findByAddressAndTime(address, currentDate);
+
         if (weatherInfo == null) {
             throw new IllegalArgumentException("Invalid Address");
         }
 
-        // 오늘 날짜를 가져옴
-        LocalDate currentDate = LocalDate.now();
+
 
         // 날짜를 원하는 포맷으로 변환
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
