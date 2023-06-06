@@ -55,6 +55,18 @@ import java.util.function.Function;
     }
 
     @Override
+    public Optional<WeatherInfo> findByTime(LocalDate time) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<WeatherInfo> query = builder.createQuery(WeatherInfo.class);
+        Root<WeatherInfo> root = query.from(WeatherInfo.class);
+
+        query.select(root)
+                .where(builder.equal(root.get("time"), time));
+
+        List<WeatherInfo> resultList = entityManager.createQuery(query).getResultList();
+        return resultList.stream().findFirst();
+    }
+    @Override
     public List<WeatherInfo> findByLocationXAndLocationY(Double locationX, Double locationY) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<WeatherInfo> query = cb.createQuery(WeatherInfo.class);
