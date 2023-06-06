@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.security.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +19,6 @@ public interface WeatherInfoRepository extends JpaRepository<WeatherInfo, Intege
     Optional<WeatherInfo> findFirstByOrderByTimeDesc();
     Optional<WeatherInfo> findByAquafarmId(int aquafarmId);
     WeatherInfo findByAddress(String address);
+    WeatherInfo findByAddressAndTime(String address, LocalDate time);
 }
+

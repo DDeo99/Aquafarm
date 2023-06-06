@@ -31,7 +31,7 @@ public class WeatherInfo {
     private String locationY;
 
     @Column(nullable = true)
-    private LocalDateTime time;
+    private LocalDate time;
     @Column(nullable = true)
     private String  sunrise;
     @Column(nullable = true)

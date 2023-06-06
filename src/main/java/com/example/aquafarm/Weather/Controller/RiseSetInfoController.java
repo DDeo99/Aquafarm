@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @RestController
 public class RiseSetInfoController {
@@ -31,7 +32,25 @@ public class RiseSetInfoController {
     ) {
         try {
             WeatherInfo weatherInfo = weatherInfoRepository.findByAddress(address);
-            RiseSetInfoDTO response = riseSetInfoService.getRiseSetInfo(address);
+            if (weatherInfo == null) {
+                throw new IllegalArgumentException("Invalid Address");
+            }
+
+            // 오늘의 날짜 가져오기
+            LocalDate currentDate = LocalDate.now();
+
+            // WeatherInfo 테이블에서 오늘의 날짜와 같은 날짜의 데이터 가져오기
+            WeatherInfo todayWeatherInfo = weatherInfoRepository.findByAddressAndTime(address, currentDate);
+
+            // 데이터가 없는 경우, 새로운 데이터 생성
+            if (todayWeatherInfo == null) {
+                todayWeatherInfo = WeatherInfo.builder()
+                        .address(address)
+                        .time(currentDate)
+                        .build();
+            }
+
+            RiseSetInfoDTO response = riseSetInfoService.getRiseSetInfo(weatherInfo.getAddress());
 
             // 필요한 정보 업데이트
             riseSetInfoService.updateWeatherInfo(weatherInfo, response);
