@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -33,7 +34,7 @@ import java.util.function.Function;
         this.entityManager = entityManager;
     }
 
-
+/*
     @Override
     public WeatherInfo findByAddress(String address) {
         TypedQuery<WeatherInfo> query = entityManager.createQuery("SELECT w FROM WeatherInfo w WHERE w.address = :address", WeatherInfo.class);
@@ -44,14 +45,20 @@ import java.util.function.Function;
             return null;
         }
     }
-
+*/
     @Override
     public WeatherInfo findByAddressAndTime(String address, LocalDate time) {
-        String query = "SELECT w FROM WeatherInfo w WHERE w.address = :address AND w.time = :time";
-        return entityManager.createQuery(query, WeatherInfo.class)
+        String query = "SELECT w FROM WeatherInfo w WHERE w.address = :address AND w.time = :time ORDER BY w.id DESC";
+        TypedQuery<WeatherInfo> typedQuery = entityManager.createQuery(query, WeatherInfo.class)
                 .setParameter("address", address)
                 .setParameter("time", time)
-                .getSingleResult();
+                .setMaxResults(1);
+
+        List<WeatherInfo> resultList = typedQuery.getResultList();
+        if (!resultList.isEmpty()) {
+            return resultList.get(0);
+        }
+        return null;
     }
 
     @Override
@@ -66,6 +73,21 @@ import java.util.function.Function;
         List<WeatherInfo> resultList = entityManager.createQuery(query).getResultList();
         return resultList.stream().findFirst();
     }
+
+    @Override
+    public WeatherInfo findByAllAddress(String address) {
+        String queryString = "SELECT w FROM WeatherInfo w WHERE w.address = :address";
+        Query query = entityManager.createQuery(queryString);
+        query.setParameter("address", address);
+
+        List<WeatherInfo> resultList = query.getResultList();
+        if (!resultList.isEmpty()) {
+            return resultList.get(0);
+        }
+        return null;
+    }
+
+
     @Override
     public List<WeatherInfo> findByLocationXAndLocationY(Double locationX, Double locationY) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();

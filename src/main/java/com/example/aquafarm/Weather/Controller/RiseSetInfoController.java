@@ -30,14 +30,15 @@ public class RiseSetInfoController {
     public ResponseEntity<RiseSetInfoDTO> getRiseSetInfo(
             @RequestParam("address") String address
     ) {
+        // 오늘의 날짜 가져오기
+        LocalDate currentDate = LocalDate.now();
+
         try {
-            WeatherInfo weatherInfo = weatherInfoRepository.findByAddress(address);
+            WeatherInfo weatherInfo = weatherInfoRepository.findByAddressAndTime(address,currentDate);
             if (weatherInfo == null) {
                 throw new IllegalArgumentException("Invalid Address");
             }
 
-            // 오늘의 날짜 가져오기
-            LocalDate currentDate = LocalDate.now();
 
             // WeatherInfo 테이블에서 오늘의 날짜와 같은 날짜의 데이터 가져오기
             WeatherInfo todayWeatherInfo = weatherInfoRepository.findByAddressAndTime(address, currentDate);
