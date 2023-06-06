@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Kibana Dashboard with Additional Data</title>
+    <style>
+        .container {
+            display: flex;
+        }
+        .kibana {
+            flex: 1;
+        }
+        .additional-data {
+            flex: 1;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>Kibana Dashboard with Additional Data</h1>
+<div class="container">
+    <div class="kibana">
+        <iframe src="http://localhost:5601/app/dashboards#/view/d5acbe30-0440-11ee-b295-c966d495b73d?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))" width="100%" height="600px"></iframe>
+    </div>
+    <div class="additional-data">
+        <h2>오늘의 일출/일몰 시간</h2>
+        <!-- 여기에 오늘의 일출/일몰 시간을 표시하는 데이터를 추가하세요 -->
+    </div>
+</div>
+</body>
+</html>
