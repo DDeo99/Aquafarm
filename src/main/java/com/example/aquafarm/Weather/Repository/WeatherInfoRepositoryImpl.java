@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-@Repository
     public class WeatherInfoRepositoryImpl implements WeatherInfoRepository {
 
     private final EntityManager entityManager;
@@ -47,7 +46,7 @@ import java.util.function.Function;
     }
 */
     @Override
-    public WeatherInfo findByAddressAndTime(String address, LocalDate time) {
+    public Optional<WeatherInfo> findByAddressAndTime(String address, LocalDate time) {
         String query = "SELECT w FROM WeatherInfo w WHERE w.address = :address AND w.time = :time ORDER BY w.id DESC";
         TypedQuery<WeatherInfo> typedQuery = entityManager.createQuery(query, WeatherInfo.class)
                 .setParameter("address", address)
@@ -56,9 +55,9 @@ import java.util.function.Function;
 
         List<WeatherInfo> resultList = typedQuery.getResultList();
         if (!resultList.isEmpty()) {
-            return resultList.get(0);
+            return Optional.of(resultList.get(0));
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -187,7 +186,8 @@ import java.util.function.Function;
 
     @Override
     public <S extends WeatherInfo> S save(S entity) {
-        return null;
+        entityManager.persist(entity);
+        return entity;
     }
 
     @Override

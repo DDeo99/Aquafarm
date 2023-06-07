@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/weather")
+@CrossOrigin(origins = "http://localhost:8080")
 public class WeatherInfoController {
     private final WeatherInfoService weatherInfoService;
 

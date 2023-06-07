@@ -34,22 +34,8 @@ public class RiseSetInfoController {
         LocalDate currentDate = LocalDate.now();
 
         try {
-            WeatherInfo weatherInfo = weatherInfoRepository.findByAddressAndTime(address,currentDate);
-            if (weatherInfo == null) {
-                throw new IllegalArgumentException("Invalid Address");
-            }
-
-
-            // WeatherInfo 테이블에서 오늘의 날짜와 같은 날짜의 데이터 가져오기
-            WeatherInfo todayWeatherInfo = weatherInfoRepository.findByAddressAndTime(address, currentDate);
-
-            // 데이터가 없는 경우, 새로운 데이터 생성
-            if (todayWeatherInfo == null) {
-                todayWeatherInfo = WeatherInfo.builder()
-                        .address(address)
-                        .time(currentDate)
-                        .build();
-            }
+            // setWeatherInfo 메소드를 사용하여 WeatherInfo를 설정하고 저장
+            WeatherInfo weatherInfo = riseSetInfoService.setWeatherInfo(address);
 
             RiseSetInfoDTO response = riseSetInfoService.getRiseSetInfo(weatherInfo.getAddress());
 
