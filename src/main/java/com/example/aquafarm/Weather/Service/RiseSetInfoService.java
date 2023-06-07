@@ -6,7 +6,10 @@ import com.example.aquafarm.Weather.DTO.RiseSetInfoDTO;
 import com.example.aquafarm.Weather.Domain.WeatherInfo;
 import com.example.aquafarm.Weather.Repository.WeatherInfoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,29 +18,75 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 @Service
 public class RiseSetInfoService {
-
+    @PersistenceContext
+    private EntityManager entityManager;
     private final WeatherInfoRepository weatherInfoRepository;
     private final GeocodingService geocodingService;
     public RiseSetInfoService(WeatherInfoRepository weatherInfoRepository, GeocodingService geocodingService) {
         this.weatherInfoRepository = weatherInfoRepository;
         this.geocodingService = geocodingService;
     }
+
+    @Transactional
+    public WeatherInfo setWeatherInfo(String address) {
+
+        // 오늘 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        // 주소와 날짜가 같은 기존 엔티티를 찾음
+        Optional<WeatherInfo> optionalWeatherInfo = weatherInfoRepository.findByAddressAndTime(address, currentDate);
+
+        WeatherInfo weatherInfo;
+
+        if (optionalWeatherInfo.isPresent()) {
+            // 기존 엔티티가 있으면 그것을 사용
+            weatherInfo = optionalWeatherInfo.get();
+        } else {
+            // 기존 엔티티가 없으면 새 엔티티를 생성
+            weatherInfo = WeatherInfo.builder()
+                    .address(address)
+                    .time(currentDate)
+                    .build();
+
+            // 새 엔티티를 데이터베이스에 저장
+            weatherInfoRepository.save(weatherInfo);
+
+            System.out.println("오늘날짜: " + currentDate);
+            System.out.println("WeatherInfo saved: " + weatherInfo);
+        }
+
+        // 생성 또는 수정된 엔티티를 반환
+        return weatherInfo;
+    }
+    @Transactional
     public RiseSetInfoDTO getRiseSetInfo(String address) throws IOException {
 
 
         // 오늘 날짜를 가져옴
         LocalDate currentDate = LocalDate.now();
 
-        WeatherInfo weatherInfo = weatherInfoRepository.findByAddressAndTime(address, currentDate);
+        // 주소와 날짜가 같은 기존 엔티티를 찾음
+        Optional<WeatherInfo> optionalWeatherInfo = weatherInfoRepository.findByAddressAndTime(address, currentDate);
 
-        if (weatherInfo == null) {
-            throw new IllegalArgumentException("Invalid Address");
+        WeatherInfo weatherInfo;
+
+        if (optionalWeatherInfo.isPresent()) {
+            // 기존 엔티티가 있으면 그것을 사용
+            weatherInfo = optionalWeatherInfo.get();
+        } else {
+            // 기존 엔티티가 없으면 새 엔티티를 생성
+            weatherInfo = WeatherInfo.builder()
+                    .address(address)
+                    .time(currentDate)
+                    .build();
         }
 
-
+        // WeatherInfo 저장
+        weatherInfoRepository.save(weatherInfo);
 
         // 날짜를 원하는 포맷으로 변환
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
