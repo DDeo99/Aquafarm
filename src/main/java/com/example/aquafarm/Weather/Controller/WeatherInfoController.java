@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/weather")
-@CrossOrigin(origins = "http://localhost:8080")
 public class WeatherInfoController {
     private final WeatherInfoService weatherInfoService;
 
@@ -26,7 +26,6 @@ public class WeatherInfoController {
     }
 
     @GetMapping(value = "/sunrise-sunset", produces = MediaType.APPLICATION_JSON_VALUE)
-    @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<Map<String, String>> getSunriseAndSunsetTimeToday() {
         Optional<String> sunriseTimeOptional = weatherInfoService.getSunriseTimeToday();
         Optional<String> sunsetTimeOptional = weatherInfoService.getSunsetTimeToday();
