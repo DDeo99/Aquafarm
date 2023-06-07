@@ -3,11 +3,13 @@ package com.example.aquafarm.Weather.Controller;
 import com.example.aquafarm.Weather.Service.WeatherInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -22,22 +24,23 @@ public class WeatherInfoController {
         this.weatherInfoService = weatherInfoService;
     }
 
-    @GetMapping("/sunrise-sunset")
+    @GetMapping(value = "/sunrise-sunset", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<Map<String, String>> getSunriseAndSunsetTimeToday() {
         Optional<String> sunriseTimeOptional = weatherInfoService.getSunriseTimeToday();
         Optional<String> sunsetTimeOptional = weatherInfoService.getSunsetTimeToday();
 
         if (sunriseTimeOptional.isPresent() && sunsetTimeOptional.isPresent()) {
-            String sunriseTime = sunriseTimeOptional.get();
-            String sunsetTime = sunsetTimeOptional.get();
+            String sunrise = sunriseTimeOptional.get();
+            String sunset = sunsetTimeOptional.get();
 
             Map<String, String> sunriseSunsetMap = new HashMap<>();
-            sunriseSunsetMap.put("sunrise", sunriseTime);
-            sunriseSunsetMap.put("sunset", sunsetTime);
+            sunriseSunsetMap.put("sunrise", sunrise);
+            sunriseSunsetMap.put("sunset", sunset);
 
             return ResponseEntity.ok(sunriseSunsetMap);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.notFound().build();
         }
     }
 }
