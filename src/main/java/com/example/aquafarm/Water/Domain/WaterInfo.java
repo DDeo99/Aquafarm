@@ -1,5 +1,7 @@
 package com.example.aquafarm.Water.Domain;
 
+import com.example.aquafarm.Aquafarm.Domain.AquafarmInfo;
+import com.example.aquafarm.Weather.Domain.WeatherInfo;
 import lombok.*;
 
 import javax.persistence.*;
@@ -33,4 +35,8 @@ public class WaterInfo {
 
     @Column(name = "updated_at")
     private Timestamp updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "aquafarm_ID")
+    private AquafarmInfo aquafarm_info;
 }

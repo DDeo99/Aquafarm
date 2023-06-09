@@ -40,6 +40,10 @@ public class WeatherInfo {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    @JoinColumn(name = "aquafarm_ID")
+    private AquafarmInfo aquafarm_info;
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
