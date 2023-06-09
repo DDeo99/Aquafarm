@@ -1,5 +1,6 @@
 package com.example.aquafarm.Water.Controller;
 
+import com.example.aquafarm.Water.DTO.WaterDTO;
 import com.example.aquafarm.Water.Domain.WaterInfo;
 import com.example.aquafarm.Water.Repository.WaterInfoRepository;
 import com.example.aquafarm.Water.Service.KibanaAPIService;
@@ -23,8 +24,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/waterinfo")
@@ -122,4 +128,20 @@ public class WaterInfoController {
         }
     }
 
+    @GetMapping("/yearly/{id}")
+    public List<WaterDTO> getYearlyData(@PathVariable("id") int id) {
+        // 현재로부터 1년 전
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.YEAR, -1);
+        Timestamp start = new Timestamp(calendar.getTime().getTime());
+
+        // 현재 시간
+        Timestamp end = new Timestamp(System.currentTimeMillis());
+
+        // 데이터베이스에서 1년간의 데이터를 가져와 WaterDTO 객체로 변환하여 반환
+        return waterInfoRepository.findAllByDateBetween(id, start, end).stream()
+                .map(waterInfo -> new WaterDTO(waterInfo.getWaterId(), waterInfo.getWaterTemp(), waterInfo.getDoValue(), waterInfo.getTurbi(), waterInfo.getNh4(), waterInfo.getPH(), waterInfo.getDate()))
+                .collect(Collectors.toList());
+
+    }
 }
