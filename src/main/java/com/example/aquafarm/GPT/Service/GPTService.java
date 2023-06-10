@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class GPTService {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
+    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -72,7 +72,7 @@ public class GPTService {
 
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("messages", messages);
-            requestBody.put("max_tokens", 100);
+            requestBody.put("max_tokens", 50);
             requestBody.put("model", "gpt-3.5-turbo");
 
             HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(requestBody), headers);
