@@ -41,6 +41,8 @@ dependencies {
 	implementation 'org.apache.httpcomponents:httpclient' // 키바나
 
 	implementation 'org.jfree:jfreechart:1.5.3' // JFreeChart
+
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 }
 
 tasks.named('test') {
