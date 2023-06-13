@@ -1,33 +1,61 @@
 package com.example.aquafarm.GPT.Service;
 
+import com.example.aquafarm.GPT.DTO.SunriseSunsetData;
+import com.example.aquafarm.Weather.Service.WeatherInfoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jfree.data.json.impl.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class GPTService {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
-
+    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final WeatherInfoService weatherInfoService;
 
-    public GPTService(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
+    @Autowired
+    public GPTService(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper, WeatherInfoService weatherInfoService) {
         this.restTemplate = restTemplateBuilder.build();
         this.objectMapper = objectMapper;
+        this.weatherInfoService = weatherInfoService;
     }
 
     public String getWaterInfo(String id) {
         String url = "http://localhost:8080/waterinfo/yearly/" + id;
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-        return response.getBody();
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                String waterInfo = response.getBody();
+                // 여기에서 waterId를 제외한 수질 정보만 반환하도록 처리합니다.
+                // 예를 들어, waterId를 포함한 XML 데이터가 아래와 같다고 가정합니다.
+                // <waterInfo>
+                //     <waterId>283</waterId>
+                //     <waterTemp>25.72</waterTemp>
+                //     <doValue>0.19</doValue>
+                //     <turbi>5.77</turbi>
+                //     <nh4>0.015</nh4>
+                //     <date>2023-06-06T12:00:00.000+00:00</date>
+                //     <ph>6.87</ph>
+                // </waterInfo>
+                // waterId를 제외한 나머지 정보만 반환하도록 처리합니다.
+                String waterInfoWithoutId = waterInfo.replace("<waterId>" + id + "</waterId>", "");
+                return waterInfoWithoutId;
+            } else {
+                throw new RuntimeException("Failed to retrieve water info: " + response.getStatusCode());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving water info: " + e.getMessage());
+        }
     }
 
     public String getFoodRecord() {
@@ -48,6 +76,15 @@ public class GPTService {
                 + "Here is the sunrise and sunset info for today: " + sunriseSunset + "\n";
     }
 
+    private SunriseSunsetData parseSunriseSunset(String sunriseSunset) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(sunriseSunset, SunriseSunsetData.class);
+        } catch (IOException e) {
+            throw new RuntimeException("일출 시간 및 일몰 시간 파싱 오류", e);
+        }
+    }
+
     public String askGPT(String question) {
         try {
             String waterInfo = getWaterInfo("1"); // replace "your_id" with the actual ID
@@ -58,6 +95,35 @@ public class GPTService {
             // Logging the data before sending the question
             System.out.println("Prepared message: " + preMessage);
             System.out.println("Question: " + question);
+
+            String modifiedQuestion = question.toLowerCase();
+            if (modifiedQuestion.contains("광어에게 밥을 언제 줄까?")) {
+                SunriseSunsetData sunriseSunsetData = parseSunriseSunset(sunriseSunset);
+                if (sunriseSunsetData != null) {
+                    LocalDateTime sunriseDateTime = sunriseSunsetData.getSunriseDateTime();
+                    LocalDateTime sunsetDateTime = sunriseSunsetData.getSunsetDateTime();
+
+                    // 밥 주는 시간 계산하기
+                    LocalDateTime feedingTime1 = sunriseDateTime.minusMinutes(30);
+                    LocalDateTime feedingTime2 = sunsetDateTime.minusMinutes(30);
+
+                    // 밥 주는 시간을 문자열로 포맷팅
+                    String formattedFeedingTime1 = feedingTime1.format(DateTimeFormatter.ofPattern("hh:mm a"));
+                    String formattedFeedingTime2 = feedingTime2.format(DateTimeFormatter.ofPattern("hh:mm a"));
+
+                    // 응답에 밥 주는 시간 추가하기
+                    preMessage += "광어에게 밥을 줄 시간은 아침: " + formattedFeedingTime1 + ", 저녁: " + formattedFeedingTime2 + "입니다.";
+                } else {
+                    // 오류 처리 로직 추가
+                    throw new RuntimeException("일출 시간 파싱 오류");
+                }
+            } else if (modifiedQuestion.contains("tell me the feeding record")) {
+                preMessage = "Here is the feeding record for your reference:\n" + foodRecord;
+            } else if (modifiedQuestion.contains("provide the sunrise and sunset info")) {
+                preMessage = "Here is the sunrise and sunset info for today:\n" + sunriseSunset;
+            } else if (modifiedQuestion.contains("provide the water info")) {
+                preMessage += "Here is the water information:\n" + waterInfo;
+            }
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -79,7 +145,7 @@ public class GPTService {
 
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("messages", messages);
-            requestBody.put("max_tokens", 200);
+            requestBody.put("max_tokens", 500);
             requestBody.put("model", "gpt-3.5-turbo");
 
             HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(requestBody), headers);
