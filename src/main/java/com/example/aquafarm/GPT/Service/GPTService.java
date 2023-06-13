@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class GPTService {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
+    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -65,14 +65,21 @@ public class GPTService {
 
             List<Map<String, String>> messages = new ArrayList<>();
 
-            Map<String, String> message = new HashMap<>();
-            message.put("role", "user");
-            message.put("content", question);
-            messages.add(message);
+            // System message with preMessage
+            Map<String, String> systemMessage = new HashMap<>();
+            systemMessage.put("role", "system");
+            systemMessage.put("content", preMessage);
+            messages.add(systemMessage);
+
+            // User message with the question
+            Map<String, String> userMessage = new HashMap<>();
+            userMessage.put("role", "user");
+            userMessage.put("content", question);
+            messages.add(userMessage);
 
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("messages", messages);
-            requestBody.put("max_tokens", 50);
+            requestBody.put("max_tokens", 200);
             requestBody.put("model", "gpt-3.5-turbo");
 
             HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(requestBody), headers);
