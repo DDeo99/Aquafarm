@@ -18,7 +18,7 @@ import java.util.*;
 @Service
 public class GPTService {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
+    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final WeatherInfoService weatherInfoService;
@@ -97,7 +97,7 @@ public class GPTService {
             System.out.println("Question: " + question);
 
             String modifiedQuestion = question.toLowerCase();
-            if (modifiedQuestion.contains("광어에게 밥을 언제 줄까?")) {
+            if (modifiedQuestion.contains("밥을 언제 줄까?")) {
                 SunriseSunsetData sunriseSunsetData = parseSunriseSunset(sunriseSunset);
                 if (sunriseSunsetData != null) {
                     LocalDateTime sunriseDateTime = sunriseSunsetData.getSunriseDateTime();
@@ -117,13 +117,16 @@ public class GPTService {
                     // 오류 처리 로직 추가
                     throw new RuntimeException("일출 시간 파싱 오류");
                 }
-            } else if (modifiedQuestion.contains("tell me the feeding record")) {
+            } else if (modifiedQuestion.contains("급이 기록")) {
                 preMessage = "Here is the feeding record for your reference:\n" + foodRecord;
             } else if (modifiedQuestion.contains("provide the sunrise and sunset info")) {
                 preMessage = "Here is the sunrise and sunset info for today:\n" + sunriseSunset;
             } else if (modifiedQuestion.contains("provide the water info")) {
                 preMessage += "Here is the water information:\n" + waterInfo;
-            }
+
+             } else if (modifiedQuestion.contains("수질 관리")) {
+            preMessage += "수질에 문제가 없어보입니다.:\n" ;
+             }
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
