@@ -133,7 +133,9 @@ public class WaterInfoController {
     public List<WaterDTO> getYearlyData(@PathVariable("id") int id) {
         // 현재로부터 1년 전
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.YEAR, -1);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+
+        //calendar.add(Calendar.YEAR, -1);
         Timestamp start = new Timestamp(calendar.getTime().getTime());
 
         // 현재 시간
