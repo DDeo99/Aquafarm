@@ -1,0 +1,169 @@
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GPT Chat</title>
+</head>
+<body>
+<div class>
+  <div class>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" style="width: 25px; height: 25px;">
+    <h2 style="display: inline;">GPT 질문 내역</h2>
+    <input type="text" id="question-input" placeholder="질문을 입력하세요">
+    <button id="question-button">질의문 버튼</button>
+  </div>
+  <div class>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" style="width: 25px; height: 25px;">
+    <h2 style="display: inline;">GPT 답변 내역</h2>
+    <div id="answer-container"></div>
+  </div>
+</div>
+
+<script>
+    // 질의문 버튼 클릭 이벤트 핸들러
+    document.getElementById('question-button').addEventListener('click', async () => {
+      const questionInput = document.getElementById('question-input');
+      const question = questionInput.value.trim();
+      questionInput.value = '';
+
+      if (question) {
+        const response = await fetch('http://localhost:8080/gpt/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            question: question
+          })
+        });
+
+        if (response.ok) {
+          const answer = await response.text();
+          const answerContainer = document.getElementById('answer-container');
+          answerContainer.innerHTML = answer;
+        } else {
+          console.error('Failed to fetch GPT answer');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>GPT Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f8f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 25px;
+      height: 25px;
+      margin-right: 10px;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .input-container {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .input-field {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .button {
+      margin-left: 10px;
+      padding: 8px 16px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .answer-container {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 20px;
+      background-color: #f8f8f8;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg">
+    <h2 class="title">GPT 질문 내역</h2>
+  </div>
+  <div class="input-container">
+    <input type="text" id="question-input" class="input-field" placeholder="질문을 입력하세요">
+    <button id="question-button" class="button">질의문 버튼</button>
+  </div>
+  <div class="header">
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg">
+    <h2 class="title">GPT 답변 내역</h2>
+  </div>
+  <div id="answer-container" class="answer-container"></div>
+</div>
+
+<script>
+    // 질의문 버튼 클릭 이벤트 핸들러
+    document.getElementById('question-button').addEventListener('click', async () => {
+      const questionInput = document.getElementById('question-input');
+      const question = questionInput.value.trim();
+      questionInput.value = '';
+
+      if (question) {
+        const response = await fetch('http://localhost:8080/gpt/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            question: question
+          })
+        });
+
+        if (response.ok) {
+          const answer = await response.text();
+          const answerContainer = document.getElementById('answer-container');
+          answerContainer.innerHTML = answer;
+        } else {
+          console.error('Failed to fetch GPT answer');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
