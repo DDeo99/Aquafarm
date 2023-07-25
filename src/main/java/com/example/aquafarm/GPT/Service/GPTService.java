@@ -18,7 +18,7 @@ import java.util.*;
 @Service
 public class GPTService {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
-    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
+    private static final String API_KEY = "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"; // 본인의 API 키를 사용하세요.
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final WeatherInfoService weatherInfoService;
@@ -36,18 +36,7 @@ public class GPTService {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 String waterInfo = response.getBody();
-                // 여기에서 waterId를 제외한 수질 정보만 반환하도록 처리합니다.
-                // 예를 들어, waterId를 포함한 XML 데이터가 아래와 같다고 가정합니다.
-                // <waterInfo>
-                //     <waterId>283</waterId>
-                //     <waterTemp>25.72</waterTemp>
-                //     <doValue>0.19</doValue>
-                //     <turbi>5.77</turbi>
-                //     <nh4>0.015</nh4>
-                //     <date>2023-06-06T12:00:00.000+00:00</date>
-                //     <ph>6.87</ph>
-                // </waterInfo>
-                // waterId를 제외한 나머지 정보만 반환하도록 처리합니다.
+
                 String waterInfoWithoutId = waterInfo.replace("<waterId>" + id + "</waterId>", "");
                 return waterInfoWithoutId;
             } else {
