@@ -3,5 +3,10 @@
 #### 넙치의 급이 시스템 및 Chat GPT를 활용한 성장률 피드백 서비스
 
 
-#### 프로젝트 설명
+#### 🟦 프로젝트 설명
 [https://velog.io/@ddeo99?tag=%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%96%91%EC%8B%9D](https://velog.io/@ddeo99/%EA%B8%B0%EC%97%85%EC%82%AC%ED%9A%8C-%EB%A7%9E%EC%B6%A4%ED%98%95-%EC%BA%A1%EC%8A%A4%ED%86%A4%EB%94%94%EC%9E%90%EC%9D%B8%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%96%91%EC%8B%9D-week6%EA%B8%B0%ED%9A%8D%EC%84%9C-%EC%B5%9C%EC%A2%85-%EC%88%98%EC%A0%95)https://velog.io/@ddeo99/%EA%B8%B0%EC%97%85%EC%82%AC%ED%9A%8C-%EB%A7%9E%EC%B6%A4%ED%98%95-%EC%BA%A1%EC%8A%A4%ED%86%A4%EB%94%94%EC%9E%90%EC%9D%B8%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%96%91%EC%8B%9D-week6%EA%B8%B0%ED%9A%8D%EC%84%9C-%EC%B5%9C%EC%A2%85-%EC%88%98%EC%A0%95
+
+<br>
+
+#### 🟦 프로젝트 결과
+https://velog.io/@ddeo99/%EA%B8%B0%EC%97%85%EC%82%AC%ED%9A%8C-%EB%A7%9E%EC%B6%A4%ED%98%95-%EC%BA%A1%EC%8A%A4%ED%86%A4%EB%94%94%EC%9E%90%EC%9D%B8%EC%8A%A4%EB%A7%88%ED%8A%B8%EC%96%91%EC%8B%9D-week9week12
